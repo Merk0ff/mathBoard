@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+</script>
+<script src="draw.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://mauriciopoppe.github.io/function-plot/js/function-plot.js"></script>
+
+<link rel="stylesheet" type="text/css" href="basic.css">.
+<link rel="stylesheet" type="text/css" href="draw.css">.
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="zbeubeu"></div>
+
+<div id="plotter">
+    <h2>Interactive function plotter</h2>
+    <div class="layer">
+        <section id="plotSettings">
+            <label for="xMin">xMin: </label> value: <input type=number id="xMin" value=-5 step=0.5 oninput="plot();">
+            <p></p>
+            <label for="xMin">xMax: </label> value: <input type=number id="xMax" value=6.28 step=0.5 oninput="plot();">
+
+            <p></p>
+            <label for="yMin">yMin: </label> value: <input type=number id="yMin" value=-6 step=0.5 oninput="plot();">
+            <p></p>
+            <label for="yMax">yMax: </label> value: <input type=number id="yMax" value=6 step=0.5 oninput="plot();">
+            <p></p>
+            <label for="color">Color: </label> value: <input type=color id="color" onchange="plot();">
+            <p></p>
+            <label for="function">Function to plot: </label>
+            <input id="function" type="text" value="sin(x)" onchange="plot();">
+            <p></p>
+            <button onclick="plot();">Plot it!</button>
+
+        </section>
+
+        <section id="plot">
+            <div id="myFunction"></div>
+        </section>
+    </div>
+</div>
+
+<p id="flip">
+    <button id="flipper" style="width: 169px; height: 169px">flip</button>
+</p>
+
+<script>
+  let myBoard = new DrawingBoard.Board('zbeubeu');
+  let parameters = {
+    target: '#myFunction',
+    data: [{
+      fn: 'sin(x)',
+      color: 'red'
+    }],
+    grid: true,
+    yAxis: {domain: [-1, 1]},
+    xAxis: {domain: [0, 2*Math.PI]}
+  };
+
+
+  $("#plotter").toggle();
+
+  function plot() {
+    let f = document.querySelector("#function").value;
+    let xMin = document.querySelector("#xMin").value;
+    let xMax = document.querySelector("#xMax").value;
+    let yMin = document.querySelector("#yMin").value;
+    let yMax = document.querySelector("#yMax").value;
+    let color = document.querySelector("#color").value;
+
+    parameters.data[0].fn = f;
+    parameters.xAxis.domain = [xMin, xMax];
+    parameters.yAxis.domain = [yMin, yMax];
+    parameters.data[0].color = color;
+
+    functionPlot(parameters);
+  }
+
+  $("#flipper").click( function() {
+
+    $("#zbeubeu").toggle();
+    $("#plotter").toggle();
+    // $("#zbeubeu").hide('slow');
+  });
+</script>
+</body>
+</html>
