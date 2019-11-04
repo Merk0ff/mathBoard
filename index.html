@@ -19,13 +19,11 @@
 <div id="zbeubeu"></div>
 
 <div id="plotter">
-    <h2>Interactive function plotter</h2>
     <div class="layer">
         <section id="plotSettings">
             <label for="xMin">xMin: </label> value: <input type=number id="xMin" value=-5 step=0.5 oninput="plot();">
             <p></p>
             <label for="xMin">xMax: </label> value: <input type=number id="xMax" value=6.28 step=0.5 oninput="plot();">
-
             <p></p>
             <label for="yMin">yMin: </label> value: <input type=number id="yMin" value=-6 step=0.5 oninput="plot();">
             <p></p>
@@ -36,24 +34,27 @@
             <label for="function">Function to plot: </label>
             <input id="function" type="text" value="sin(x)" onchange="plot();">
             <p></p>
-            <button onclick="plot();">Plot it!</button>
+            <button onclick="plot();">Plot it!</button> <button onclick="plot();">Edit</button>
 
         </section>
 
-        <section id="plot">
+        <div id="plot">
             <div id="myFunction"></div>
-        </section>
+        </div>
     </div>
 </div>
 
 <p id="flip">
     <button id="flipper" style="width: 169px; height: 169px">flip</button>
+    <button id="edit" onclick="edit()" style="width: 169px; height: 169px">edit</button>
 </p>
 
 <script>
-  let myBoard = new DrawingBoard.Board('zbeubeu');
+  let myBoard = new DrawingBoard.Board('zbeubeu', {background: false});
   let parameters = {
     target: '#myFunction',
+    width: parseInt($(".drawing-board-canvas-wrapper").css("width"), 10),
+    height: parseInt($(".drawing-board-canvas-wrapper").css("height"), 10),
     data: [{
       fn: 'sin(x)',
       color: 'red'
@@ -65,6 +66,12 @@
 
 
   $("#plotter").toggle();
+  $("#plot").hide();
+
+  function edit()
+  {
+    $("#zbeubeu").toggle();
+  }
 
   function plot() {
     let f = document.querySelector("#function").value;
@@ -73,6 +80,9 @@
     let yMin = document.querySelector("#yMin").value;
     let yMax = document.querySelector("#yMax").value;
     let color = document.querySelector("#color").value;
+
+    $("#plotSettings").hide();
+    $("#plot").show();
 
     parameters.data[0].fn = f;
     parameters.xAxis.domain = [xMin, xMax];
