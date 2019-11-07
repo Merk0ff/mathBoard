@@ -1,79 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous">
-</script>
-<script src="draw.js"></script>
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://mauriciopoppe.github.io/function-plot/js/function-plot.js"></script>
-
-<link rel="stylesheet" type="text/css" href="basic.css">.
-<link rel="stylesheet" type="text/css" href="draw.css">.
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <script src="lib/jquery-3.4.1.min.js"></script>
+  <script src="lib/draw.js"></script>
+  <script src="lib/d3.v3.min.js"></script>
+  <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+  <link rel="stylesheet" type="text/css" href="basic.css">
+  <link rel="stylesheet" type="text/css" href="lib/draw.css">
+
+  <meta charset="UTF-8">
+  <title>mathBoard</title>
 </head>
+
 <body>
+<p id="buttons">
+  <button class="sex" onclick="stateChanger(STATE.EDITF)">editf</button>
+  <button class="sex" onclick="stateChanger(STATE.DRAW)">draw</button>
+  <button class="sex" onclick="stateChanger(STATE.SHOWF)">showf</button>
+</p>
+
 <div id="zbeubeu"></div>
 
 <div id="plotter">
-    <div class="layer">
-        <section id="plotSettings">
-            <label for="xMin">xMin: </label> value: <input type=number id="xMin" value=-5 step=0.5 oninput="plot();">
-            <p></p>
-            <label for="xMin">xMax: </label> value: <input type=number id="xMax" value=6.28 step=0.5 oninput="plot();">
-            <p></p>
-            <label for="yMin">yMin: </label> value: <input type=number id="yMin" value=-6 step=0.5 oninput="plot();">
-            <p></p>
-            <label for="yMax">yMax: </label> value: <input type=number id="yMax" value=6 step=0.5 oninput="plot();">
-            <p></p>
-            <label for="color">Color: </label> value: <input type=color id="color" onchange="plot();">
-            <p></p>
-            <label for="function">Function to plot: </label>
-            <input id="function" type="text" value="sin(x)" onchange="plot();">
-            <p></p>
-            <button onclick="plot();">Plot it!</button> <button onclick="plot();">Edit</button>
+  <div class="layer">
+    <section id="plotSettings">
+      <label for="xMin">xMin: </label> value: <input type=number id="xMin" value=-5 step=0.5 oninput="plot();">
+      <p></p>
+      <label for="xMin">xMax: </label> value: <input type=number id="xMax" value=6.28 step=0.5 oninput="plot();">
+      <p></p>
+      <label for="yMin">yMin: </label> value: <input type=number id="yMin" value=-6 step=0.5 oninput="plot();">
+      <p></p>
+      <label for="yMax">yMax: </label> value: <input type=number id="yMax" value=6 step=0.5 oninput="plot();">
+      <p></p>
+      <label for="color">Color: </label> value: <input type=color id="color" onchange="plot();">
+      <p></p>
+      <label for="function">Function to plot: </label>
+      <input id="function" type="text" value="sin(x)" onchange="plot();">
+      <p></p>
+      <button onclick="plot();">Plot it!</button>
+      <button onclick="plot();">Edit</button>
+    </section>
 
-        </section>
-
-        <div id="plot">
-            <div id="myFunction"></div>
-        </div>
-    </div>
+    <div id="plot"></div>
+  </div>
 </div>
 
-<p id="flip">
-    <button id="flipper" style="width: 169px; height: 169px">flip</button>
-    <button id="edit" onclick="edit()" style="width: 169px; height: 169px">edit</button>
-</p>
-
 <script>
-  let myBoard = new DrawingBoard.Board('zbeubeu', {background: false});
+  const STATE = Object.freeze(
+    {
+      "DRAW"   : 1,
+      "SHOWF"  : 2,
+      "EDITF"  : 3,
+      "ONLOAD" : 4
+    });
+  let curState;
+  let myBoard = new DrawingBoard.Board('zbeubeu', {background: false, webStorage: false});
+  let canvas = $(".drawing-board-canvas-wrapper")
   let parameters = {
-    target: '#myFunction',
-    width: parseInt($(".drawing-board-canvas-wrapper").css("width"), 10),
-    height: parseInt($(".drawing-board-canvas-wrapper").css("height"), 10),
+    target: '#plot',
+    width: parseInt(canvas.css("width"), 10) + 30,
+    height: parseInt(parseInt(canvas.css("height"), 10) * 0.99),
     data: [{
       fn: 'sin(x)',
       color: 'red'
     }],
     grid: true,
     yAxis: {domain: [-1, 1]},
-    xAxis: {domain: [0, 2*Math.PI]}
+    xAxis: {domain: [0, 2 * Math.PI]}
   };
 
+  stateChanger(STATE.ONLOAD);
 
-  $("#plotter").toggle();
-  $("#plot").hide();
 
-  function edit()
+  function stateChanger(state)
   {
-    $("#zbeubeu").toggle();
+    switch (state)
+    {
+      case STATE.ONLOAD:
+        $("#plotter").hide();
+        $("#zbeubeu").show();
+        curState = STATE.ONLOAD;
+        break;
+      case STATE.DRAW:
+        if (curState === STATE.SHOWF)
+        {
+          $("#zbeubeu").toggle();
+          return
+        }
+
+        $("#plotter").hide();
+        $("#zbeubeu").show();
+
+        curState = STATE.DRAW;
+        break;
+      case STATE.SHOWF:
+        if (curState === STATE.SHOWF)
+        {
+          $("#plotter").toggle();
+          $("#plot").toggle();
+          return;
+        }
+
+        $("#plotSettings").hide();
+        $("#plotter").show();
+        $("#plot").show();
+        curState = STATE.SHOWF;
+        break;
+      case STATE.EDITF:
+        $("#zbeubeu").hide();
+        $("#plot").hide();
+        $("#plotter").show();
+        $("#plotSettings").show();
+        curState = STATE.EDITF;
+        break;
+    }
   }
 
-  function plot() {
+  function plot()
+  {
     let f = document.querySelector("#function").value;
     let xMin = document.querySelector("#xMin").value;
     let xMax = document.querySelector("#xMax").value;
@@ -81,23 +125,16 @@
     let yMax = document.querySelector("#yMax").value;
     let color = document.querySelector("#color").value;
 
-    $("#plotSettings").hide();
-    $("#plot").show();
-
     parameters.data[0].fn = f;
     parameters.xAxis.domain = [xMin, xMax];
     parameters.yAxis.domain = [yMin, yMax];
     parameters.data[0].color = color;
 
     functionPlot(parameters);
+    $(".function-plot").attr("height", parseInt($(".function-plot").attr("height")) + 50);
+    $(".top-right-legend").hide();
+    stateChanger(STATE.SHOWF);
   }
-
-  $("#flipper").click( function() {
-
-    $("#zbeubeu").toggle();
-    $("#plotter").toggle();
-    // $("#zbeubeu").hide('slow');
-  });
 </script>
 </body>
 </html>

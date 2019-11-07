@@ -5,11 +5,20 @@
     bottom: 0;
     left: 0;
 }
-#flip{
+#buttons {
     position: absolute;
-    right: 10%;
-    bottom: 10%;
+    right: 5%;
+    top: 0;
     z-index: 100;
+    margin: 0;
+    padding: 0;
+}
+
+button.sex {
+    color: black;
+    background: whitesmoke;
+    width: 88px;
+    height: 28px
 }
 
 h2{
@@ -41,8 +50,9 @@ section {
 #plot {
     /*visibility: hidden;*/
     position: absolute;
-    top: 2%;
+    top: 20px;
     right: 0;
-    bottom: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
 }
